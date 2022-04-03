@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Lab4.Person>
+
+@{
+    ViewData["Title"] = "Працівники за кафедрою";
+}
+
+<h1>Працівники за кафедрою @ViewBag.DepartmentName</h1>
+
+<p>
+    @*<a asp-action="Create" asp-route-id="@ViewBag.DepartmentId">Додати нового працівника</a>*@
+    @Html.ActionLink("Додати нового працівника", "Create", new { DepartmentId = @ViewBag.DepartmentId })
+    @*<a asp-controller="Departments" asp-action="Index" asp-route-id="@ViewBag.FacultyId" asp-route-name="@ViewBag.FacultyName">Назад до списку кафедр</a>*@
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PersonName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PersonName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Department.DepartmentName)
+            </td>
+            <td>
+                @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@
+                @Html.ActionLink("Редагувати", "Edit", new { id = @item.Id, departmentId = @ViewBag.DepartmentId }) |
+                <a asp-controller="Paychecks" asp-action="Index" asp-route-id="@item.Id" asp-route-name="@item.PersonName">Детальніше: чеки</a> |
+                <a asp-controller="PeoplePositions" asp-action="Index" asp-route-id="@item.Id" asp-route-name="@item.PersonName">Детальніше: посади</a> |
+                @*<a asp-action="Details" asp-route-id="@item.Id">Детальніше</a> |*@
+                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

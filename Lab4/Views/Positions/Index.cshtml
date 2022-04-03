@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Lab4.Position>
+
+@{
+    ViewData["Title"] = "Посада";
+}
+
+<h1>Детальніше про посаду</h1>
+
+<p>
+    @*<a asp-action="Create">Створити нову посаду</a>*@
+    @*@Html.ActionLink("Додати нову посаду", "Create", new { PositionId = @ViewBag.PositionId })*@
+    @*Треба створити посилання на усі посади, і вже звідти створювати нові посади*@
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PositionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Salary)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PositionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Salary)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a> |
+                @*<a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
+                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

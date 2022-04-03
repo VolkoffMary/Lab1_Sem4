@@ -1,0 +1,33 @@
+﻿@model Lab4.Department
+
+@{
+    ViewData["Title"] = "Видалити";
+}
+
+<h1>Видалити</h1>
+
+<h3>Ви впевнені, що хочете видалити цей запис?</h3>
+<div>
+    <h4>Кафедра</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DepartmentName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DepartmentName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Faculty)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Faculty.FacultyName)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index" asp-route-id="@Model.FacultyId" asp-route-name="@Model.Faculty.FacultyName">Назад до списку кафедр</a>
+    </form>
+</div>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lab4
 {
@@ -11,8 +12,11 @@ namespace Lab4
         }
 
         public int Id { get; set; }
-        public string FacultyName { get; set; } = null!;
 
+        [Required(ErrorMessage = "Поле не повинно бути порожнім")]
+        [Display(Name = "Факультет")]
+        public string FacultyName { get; set; } = null!;
+        
         public virtual ICollection<Department> Departments { get; set; }
     }
 }
