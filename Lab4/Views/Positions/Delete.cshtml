@@ -1,0 +1,45 @@
+﻿@model Lab4.Position
+
+@{
+    ViewData["Title"] = "Видалити";
+}
+
+<h1>Видалити</h1>
+
+<h3>Ви впевнені, що хочете видалити цей запис?</h3>
+<div>
+    <h4>Посада</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PositionName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PositionName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Salary)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Salary)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        @if (@Model.PeoplePositions.Count == 0)
+        {
+            <input type="submit" value="Видалити" class="btn btn-danger" />
+        }
+        else
+        {
+            <span title="Не можна видалити, бо до цієї посади прив'язані працівники.">
+                <input type="submit" value="Видалити" class="btn btn-danger" disabled />
+            </span>
+        }
+
+        <span>|</span>
+        <a asp-action="Index" asp-route-id="@Model.Id" asp-route-name="@Model.PositionName">Назад до опису посади</a>|
+    <a asp-controller="Positions" asp-action="Index">Назад до списку усіх посад</a>
+    </form>
+</div>

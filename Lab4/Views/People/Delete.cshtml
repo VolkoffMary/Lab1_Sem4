@@ -1,0 +1,65 @@
+﻿@model Lab4.Person
+
+@{
+    ViewData["Title"] = "Видалити";
+}
+
+<h1>Видалити</h1>
+
+<h3>Ви впевнені, що хочете видалити цей запис?</h3>
+<div>
+    <h4>Працівник</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PersonName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PersonName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Department)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Department.DepartmentName)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        
+        @if (@Model.PeoplePositions.Count == 0 && @Model.Paychecks.Count == 0)
+        {
+            <input type="submit" value="Видалити" class="btn btn-danger" />
+        }
+        else
+        {
+            string hint = "Не можна видалити, бо до цього працівника прив'язані";
+            if (@Model.PeoplePositions.Count != 0 && @Model.Paychecks.Count == 0)
+            {
+                hint += "виплати."; 
+            }
+            else if (@Model.PeoplePositions.Count == 0 && @Model.Paychecks.Count != 0)
+            {
+                hint += "посади."; 
+            }
+            else
+            {
+                hint += "виплати та посади."; 
+            }
+            <span title=@hint>
+                <input type="submit" value="Видалити" class="btn btn-danger" disabled />
+            </span>
+        }
+        <span>|</span>
+
+       @if (ViewBag.DepartmentName == null)
+        {   
+            <a asp-controller="People" asp-action="Index">Назад до списку усіх працівників</a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.DepartmentId" asp-route-name="@Model.Department.DepartmentName">Назад до списку працівників</a>
+        }
+    </form>
+</div>

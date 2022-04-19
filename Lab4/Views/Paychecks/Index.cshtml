@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Lab4.Paycheck>
+
+@{
+    ViewData["Title"] = "Виплати";
+}
+
+<h1>Виплати на працівника @ViewBag.PersonName</h1>
+
+<p>
+    @*<a asp-action="Create">Create New</a>*@
+    @Html.ActionLink("Додати новий виплати", "Create", new { PersonId = @ViewBag.PersonId })
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MonthDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Salary)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.Person)
+            </th>*@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+            <tr>
+                @{
+                string parameterValueMonthDate = item.MonthDate.ToString("dd.MM.yyyy");
+            }
+            <td>
+                @Html.DisplayFor(modelItem => parameterValueMonthDate)
+            </td>
+            <td>
+                @*@Html.DisplayFor(modelItem => item.Salary)*@
+                @item.Salary.ToString("N2")
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.Person.PersonName)
+            </td>*@
+            <td>
+                @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@
+                @Html.ActionLink("Редагувати", "Edit", new { id = @item.Id, personId = @ViewBag.PersonId }) |
+                @*<a asp-action="Details" asp-route-id="@item.Id">Детальніше</a> |*@
+                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

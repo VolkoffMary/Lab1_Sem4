@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Lab4.Position>
+
+@{
+    ViewData["Title"] = "Посада";
+}
+@if (@ViewBag.PositionId == null) {
+    <h1>Посади</h1>
+}
+else
+{
+    <h1>Детальніше про посаду</h1>
+}
+
+<p>
+    @if (@ViewBag.PositionId == null) { 
+        @Html.ActionLink("Додати нову посаду", "Create", new { PositionId = @ViewBag.PositionId })
+    } else {
+        @Html.ActionLink("Усі посади", "Index", new { })
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PositionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Salary)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PositionName)
+            </td>
+            <td>
+                @*@Html.DisplayFor(modelItem => item.Salary)*@
+                @item.Salary.ToString("N0")
+            </td>
+            <td>
+                @if (@ViewBag.PositionId == null) {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a>
+                    <span>|</span>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

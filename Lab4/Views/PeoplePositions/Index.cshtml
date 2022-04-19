@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Lab4.PeoplePosition>
+
+@{
+    ViewData["Title"] = "Посади";
+}
+
+<h1>Посади працівника @ViewBag.PersonName</h1>
+
+<p>
+    @*<a asp-action="Create">Додати посади для працівника @ViewBag.PersonName</a>*@
+    @Html.ActionLink("Додати посади для працівника", "Create", new { PersonId = @ViewBag.PersonId }) |
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Start)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Finish)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.Person)
+            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            @{
+                string parameterValueStart = item.Start.ToString("dd.MM.yyyy");
+                string parameterValueFinish = "";
+                if (item.Finish != null)
+                {
+                    DateTime FinishNotNull = item.Finish ?? DateTime.Now;
+                    parameterValueFinish = FinishNotNull.ToString("dd.MM.yyyy");
+                }
+            }
+            <td>
+                @Html.DisplayFor(modelItem => parameterValueStart)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => parameterValueFinish)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.Person.PersonName)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.Position.PositionName)
+            </td>
+            <td>
+                @*@Html.ActionLink("Редагувати", "Edit", new { /* id=item.PrimaryKey */ }) |*@
+                <a asp-action="Edit" asp-route-personId="@item.PersonId" asp-route-positionId="@item.PositionId">Редагувати</a> |
+                @*@Html.ActionLink("Детальніше про посади", "Details", new { /* id=item.PrimaryKey */ }) |*@
+                <a asp-controller="Positions" asp-action="Index" asp-route-id="@item.Position.Id" asp-route-name="@item.Position.PositionName">Детальніше про посаду</a> |
+                @*@Html.ActionLink("Видалити", "Delete", new { /* id=item.PrimaryKey */ })*@
+                <a asp-action="Delete" asp-route-personId="@item.PersonId" asp-route-positionId="@item.PositionId">Видалити</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

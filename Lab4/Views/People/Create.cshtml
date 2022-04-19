@@ -1,0 +1,55 @@
+﻿@model Lab4.Person
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+@if (@ViewBag.DepartmentName == null)
+{
+    <h1>Створити працівника</h1>
+}
+else
+{
+    <h1>Створити працівника кафедри @ViewBag.DepartmentName</h1>
+}
+
+<h4>Працівник</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (@ViewBag.DepartmentId.GetType().BaseType == typeof(Microsoft.AspNetCore.Mvc.Rendering.MultiSelectList))
+            {
+                <div class="form-group">
+                    <label asp-for="DepartmentId" class="control-label">Кафедра</label>
+                    <select asp-for="DepartmentId" class ="form-control" asp-items="ViewBag.DepartmentId"></select>
+                </div>
+            } 
+            else
+            {
+                <input type="hidden" value="@ViewBag.DepartmentId" name="DepartmentId" />
+                
+            }
+
+            <div class="form-group">
+                <label asp-for="PersonName" class="control-label"></label>
+                <input asp-for="PersonName" class="form-control" />
+                <span asp-validation-for="PersonName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Створити" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Назад до списку працівників", "Index", new { id = @ViewBag.DepartmentId, name = @ViewBag.DepartmentName })
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

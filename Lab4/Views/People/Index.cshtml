@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Lab4.Person>
+
+@{
+    ViewData["Title"] = "Працівники за кафедрою";
+}
+
+@if (@ViewBag.DepartmentName == null)
+{
+    <h1>Усі працівники</h1>
+}
+else
+{
+    <h1>Працівники за кафедрою @ViewBag.DepartmentName</h1>
+}
+
+<p>
+    @Html.ActionLink("Додати нового працівника", "Create", new { DepartmentId = @ViewBag.DepartmentId })
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PersonName)
+            </th>
+            @if (@ViewBag.DepartmentName == null)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.Department)
+                </th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PersonName)
+            </td>
+            @if (@ViewBag.DepartmentName == null)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Department.DepartmentName)
+                </td>
+            }
+            <td>
+                @Html.ActionLink("Редагувати", "Edit", new { id = @item.Id, departmentId = @ViewBag.DepartmentId }) |
+                <a asp-controller="Paychecks" asp-action="Index" asp-route-id="@item.Id" asp-route-name="@item.PersonName">Детальніше: чеки</a> |
+                <a asp-controller="PeoplePositions" asp-action="Index" asp-route-id="@item.Id" asp-route-name="@item.PersonName">Детальніше: посади</a> |
+                @Html.ActionLink("Видалити", "Delete", new { id = @item.Id, departmentId = @ViewBag.DepartmentId })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
