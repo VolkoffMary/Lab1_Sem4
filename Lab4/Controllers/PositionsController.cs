@@ -20,10 +20,13 @@ namespace Lab4.Controllers
         }
 
         // GET: Positions
-        public async Task<IActionResult> Index(int? id, string? name)
+        public async Task<IActionResult> Index(int? id, string name)
         {
-            if (id == null)
-                return RedirectToAction("Faculties", "Index");
+            if (id == null || name == null)
+            {
+                var positions = _context.Positions.Include(pp => pp.PeoplePositions);
+                return View(await positions.ToListAsync());
+            }
             //Знаходження працівників за кафедрами
             ViewBag.PositionId = id;
             ViewBag.PositionName = name;
@@ -132,6 +135,7 @@ namespace Lab4.Controllers
             }
 
             var position = await _context.Positions
+                .Include(p => p.PeoplePositions)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (position == null)
             {

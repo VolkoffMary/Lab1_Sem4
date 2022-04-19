@@ -20,7 +20,7 @@ namespace Lab4.Controllers
         }
 
         // GET: PeoplePositions
-        public async Task<IActionResult> Index(int? id, string? name)
+        public async Task<IActionResult> Index(int? id, string name)
         {
             if (id == null)
                 return RedirectToAction("Faculties", "Index");
@@ -52,10 +52,10 @@ namespace Lab4.Controllers
         }
 
         // GET: PeoplePositions/Create
-        public IActionResult Create(int personId)
+        public IActionResult Create(int? personId)
         {
             //ViewData["PersonId"] = new SelectList(_context.People, "Id", "PersonName");
-            //ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "Id");
+            ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "PositionName");
             ViewBag.PersonId = personId;
             ViewBag.PersonName = _context.People.Where(p => p.Id == personId).FirstOrDefault().PersonName;
             return View();
@@ -69,10 +69,44 @@ namespace Lab4.Controllers
         public async Task<IActionResult> Create(int personId, [Bind("PositionId,Start,Finish")] PeoplePosition peoplePosition)
         {
             peoplePosition.PersonId = personId;
+            peoplePosition.Person = await _context.People.FindAsync(peoplePosition.PersonId);
+            peoplePosition.Person.Department = await _context.Departments.FindAsync(peoplePosition.Person.DepartmentId);
+            peoplePosition.Person.Department.Faculty = await _context.Faculties.FindAsync(peoplePosition.Person.Department.FacultyId);
+            peoplePosition.Position = await _context.Positions.FindAsync(peoplePosition.PositionId);
+            ModelState.ClearValidationState(nameof(peoplePosition.Person));
+            ModelState.ClearValidationState(nameof(peoplePosition.Person.Department));
+            ModelState.ClearValidationState(nameof(peoplePosition.Person.Department.Faculty));
+            ModelState.ClearValidationState(nameof(peoplePosition.Position));
+            TryValidateModel(peoplePosition.Person, nameof(peoplePosition.Person));
+            TryValidateModel(peoplePosition.Person.Department, nameof(peoplePosition.Person.Department));
+            TryValidateModel(peoplePosition.Person.Department.Faculty, nameof(peoplePosition.Person.Department.Faculty));
+            TryValidateModel(peoplePosition.Position, nameof(peoplePosition.Position));
             if (ModelState.IsValid)
             {
-                _context.Add(peoplePosition);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    _context.Add(peoplePosition);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        _context.Update(peoplePosition);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!PeoplePositionExists(peoplePosition.PersonId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
                 //return RedirectToAction(nameof(Index));
                 return RedirectToAction("Index", "PeoplePositions", new { id = personId, name = _context.People.Where(p => p.Id == personId).FirstOrDefault().PersonName });
             }
@@ -115,6 +149,18 @@ namespace Lab4.Controllers
                 return NotFound();
             }
 
+            peoplePosition.Person = await _context.People.FindAsync(peoplePosition.PersonId);
+            peoplePosition.Person.Department = await _context.Departments.FindAsync(peoplePosition.Person.DepartmentId);
+            peoplePosition.Person.Department.Faculty = await _context.Faculties.FindAsync(peoplePosition.Person.Department.FacultyId);
+            peoplePosition.Position = await _context.Positions.FindAsync(peoplePosition.PositionId);
+            ModelState.ClearValidationState(nameof(peoplePosition.Person));
+            ModelState.ClearValidationState(nameof(peoplePosition.Person.Department));
+            ModelState.ClearValidationState(nameof(peoplePosition.Person.Department.Faculty));
+            ModelState.ClearValidationState(nameof(peoplePosition.Position));
+            TryValidateModel(peoplePosition.Person, nameof(peoplePosition.Person));
+            TryValidateModel(peoplePosition.Person.Department, nameof(peoplePosition.Person.Department));
+            TryValidateModel(peoplePosition.Person.Department.Faculty, nameof(peoplePosition.Person.Department.Faculty));
+            TryValidateModel(peoplePosition.Position, nameof(peoplePosition.Position));
             if (ModelState.IsValid)
             {
                 try
@@ -133,7 +179,8 @@ namespace Lab4.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "PeoplePositions", new { id = peoplePosition.PersonId, name = _context.People.Where(p => p.Id == peoplePosition.PersonId).FirstOrDefault().PersonName });
             }
             ViewData["PersonId"] = new SelectList(_context.People, "Id", "PersonName", peoplePosition.PersonId);
             ViewData["PositionId"] = new SelectList(_context.Positions, "Id", "Id", peoplePosition.PositionId);
@@ -163,12 +210,12 @@ namespace Lab4.Controllers
         // POST: PeoplePositions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int PersonId, int PositionId)
         {
-            var peoplePosition = await _context.PeoplePositions.FindAsync(id);
+            var peoplePosition = await _context.PeoplePositions.FindAsync(PersonId, PositionId);
             _context.PeoplePositions.Remove(peoplePosition);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "PeoplePositions", new { id = peoplePosition.PersonId, name = _context.People.Where(p => p.Id == peoplePosition.PersonId).FirstOrDefault().PersonName });
         }
 
         private bool PeoplePositionExists(int id)

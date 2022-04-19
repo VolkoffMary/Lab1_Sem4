@@ -121,16 +121,15 @@ namespace Lab4.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var faculty = await _context.Faculties
+                .Include(b => b.Departments)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+
             if (faculty == null)
-            {
                 return NotFound();
-            }
 
             return View(faculty);
         }

@@ -4,9 +4,16 @@
     ViewData["Title"] = "Створити посаду";
 }
 
-<h1>Створити посаду для працівника</h1>
+@if (@ViewBag.PersonName == null)
+{
+    <h1>Створити посаду</h1>
+}
+else
+{
+    <h1>Створити посаду для працівника @ViewBag.PersonName</h1>
+}
 
-<h4>Посада для працівника</h4>
+<h4>Посада для працівника @ViewBag.PersonName</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -17,24 +24,24 @@
                 <select asp-for="PersonId" class ="form-control" asp-items="ViewBag.PersonId"></select>
             </div>*@
             <div class="form-group">
-                <label asp-for="PositionId" class="control-label"></label>
+                <label asp-for="PositionId" class="control-label">Посада</label>
                 <select asp-for="PositionId" class ="form-control" asp-items="ViewBag.PositionId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Start" class="control-label"></label>
-                <input asp-for="Start" class="form-control" />
+                <input type="date" asp-for="Start" class="form-control" />
                 <span asp-validation-for="Start" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Finish" class="control-label"></label>
-                <input asp-for="Finish" class="form-control" />
+                <input type="date" asp-for="Finish" class="form-control" />
                 <span asp-validation-for="Finish" class="text-danger"></span>
             </div>
 
-            <input type="hidden" value="@ViewBag.PersonId" name="PersonId" />
+            <input type="hidden" asp-for="PersonId" value="@ViewBag.PersonId" name="PersonId" />
 
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Створити" class="btn btn-primary" />
             </div>
         </form>
     </div>

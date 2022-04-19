@@ -20,19 +20,19 @@
             </div>*@
             <div class="form-group">
                 <label asp-for="MonthDate" class="control-label"></label>
-                <input asp-for="MonthDate" class="form-control" />
+                <input type="date" asp-for="MonthDate" class="form-control" />
                 <span asp-validation-for="MonthDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Salary" class="control-label"></label>
-                <input asp-for="Salary" class="form-control" />
+                <input type="number" step="0.01" value="@Model.Salary" asp-for="Salary" class="form-control" />
                 <span asp-validation-for="Salary" class="text-danger"></span>
             </div>
 
-            <input type="hidden" value="@ViewBag.PersonId" name="PersonId" />
+            <input type="hidden" asp-for="PersonId" value="@ViewBag.PersonId" name="PersonId" />
 
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Зберегти" class="btn btn-primary" />
             </div>
         </form>
     </div>

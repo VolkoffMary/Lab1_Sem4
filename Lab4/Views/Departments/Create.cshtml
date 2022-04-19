@@ -4,7 +4,14 @@
     ViewData["Title"] = "Створити";
 }
 
-<h1>Створити кафедру для: @ViewBag.FacultyName</h1>
+@if (@ViewBag.FacultyName == null)
+{
+    <h1>Створити кафедру</h1>
+}
+else
+{
+    <h1>Створити кафедру факультета @ViewBag.FacultyName</h1>
+}
 
 <h4>Кафедра</h4>
 <hr />
@@ -12,16 +19,26 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (@ViewBag.FacultyId.GetType().BaseType == typeof(Microsoft.AspNetCore.Mvc.Rendering.MultiSelectList))
+            {
+                <div class="form-group">
+                    <label asp-for="FacultyId" class="control-label">Факультет</label>
+                    <select asp-for="FacultyId" class ="form-control" asp-items="ViewBag.FacultyId"></select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" value="@ViewBag.FacultyId" name="FacultyId" />            
+            }
+
             <div class="form-group">
                 <label asp-for="DepartmentName" class="control-label"></label>
                 <input asp-for="DepartmentName" class ="form-control" />
                 <span asp-validation-for="DepartmentName" class ="text-danger"></span>
             </div>
 
-            <input type="hidden" value="@ViewBag.FacultyId" name="FacultyId" />
-
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Створити" class="btn btn-primary" />
             </div>
         </form>
     </div>

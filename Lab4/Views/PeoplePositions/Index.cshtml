@@ -31,11 +31,20 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            @{
+                string parameterValueStart = item.Start.ToString("dd.MM.yyyy");
+                string parameterValueFinish = "";
+                if (item.Finish != null)
+                {
+                    DateTime FinishNotNull = item.Finish ?? DateTime.Now;
+                    parameterValueFinish = FinishNotNull.ToString("dd.MM.yyyy");
+                }
+            }
             <td>
-                @Html.DisplayFor(modelItem => item.Start)
+                @Html.DisplayFor(modelItem => parameterValueStart)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Finish)
+                @Html.DisplayFor(modelItem => parameterValueFinish)
             </td>
             @*<td>
                 @Html.DisplayFor(modelItem => item.Person.PersonName)

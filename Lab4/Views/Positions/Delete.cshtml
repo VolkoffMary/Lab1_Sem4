@@ -27,7 +27,19 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index" asp-route-id="@Model.Id" asp-route-name="@Model.PositionName">Назад до опису посади</a>
+        @if (@Model.PeoplePositions.Count == 0)
+        {
+            <input type="submit" value="Видалити" class="btn btn-danger" />
+        }
+        else
+        {
+            <span title="Не можна видалити, бо до цієї посади прив'язані працівники.">
+                <input type="submit" value="Видалити" class="btn btn-danger" disabled />
+            </span>
+        }
+
+        <span>|</span>
+        <a asp-action="Index" asp-route-id="@Model.Id" asp-route-name="@Model.PositionName">Назад до опису посади</a>|
+    <a asp-controller="Positions" asp-action="Index">Назад до списку усіх посад</a>
     </form>
 </div>

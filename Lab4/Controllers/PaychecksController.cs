@@ -20,10 +20,13 @@ namespace Lab4.Controllers
         }
 
         // GET: Paychecks
-        public async Task<IActionResult> Index(int? id, string? name)
+        public async Task<IActionResult> Index(int? id, string name)
         {
             if (id == null)
-                return RedirectToAction("Faculties", "Index");
+            {
+                var paychecks = _context.Paychecks.Include(p => p.Person);
+                return View(await paychecks.ToListAsync());
+            }
             //Знаходження працівників за кафедрами
             ViewBag.PersonId = id;
             ViewBag.PersonName = name;
@@ -67,6 +70,15 @@ namespace Lab4.Controllers
         public async Task<IActionResult> Create(int personId, [Bind("Id,MonthDate,Salary")] Paycheck paycheck)
         {
             paycheck.PersonId = personId;
+            paycheck.Person = await _context.People.FindAsync(paycheck.PersonId);
+            paycheck.Person.Department = await _context.Departments.FindAsync(paycheck.Person.DepartmentId);
+            paycheck.Person.Department.Faculty = await _context.Faculties.FindAsync(paycheck.Person.Department.FacultyId);
+            ModelState.ClearValidationState(nameof(paycheck.Person));
+            ModelState.ClearValidationState(nameof(paycheck.Person.Department));
+            ModelState.ClearValidationState(nameof(paycheck.Person.Department.Faculty));
+            TryValidateModel(paycheck.Person.Department, nameof(paycheck.Person));
+            TryValidateModel(paycheck.Person.Department, nameof(paycheck.Person.Department));
+            TryValidateModel(paycheck.Person.Department.Faculty, nameof(paycheck.Person.Department.Faculty));
             if (ModelState.IsValid)
             {
                 _context.Add(paycheck);
@@ -89,14 +101,16 @@ namespace Lab4.Controllers
 
             var paycheck = await _context.Paychecks.FindAsync(id);
 
-            ViewBag.PersonId = personId;
-            ViewBag.PersonName = _context.People.Where(p => p.Id == personId).FirstOrDefault().PersonName;
+            ViewBag.PersonId = paycheck.PersonId;
+            ViewBag.PersonName = _context.People.Where(p => p.Id == paycheck.PersonId).FirstOrDefault().PersonName;
+            //ViewBag.PersonId = personId;
+            //ViewBag.PersonName = _context.People.Where(p => p.Id == personId).FirstOrDefault().PersonName;
 
             if (paycheck == null)
             {
                 return NotFound();
             }
-            ViewData["PersonId"] = new SelectList(_context.People, "Id", "PersonName", paycheck.PersonId);
+            //ViewData["PersonId"] = new SelectList(_context.People, "Id", "PersonName", paycheck.PersonId);
             return View(paycheck);
         }
 
@@ -112,6 +126,15 @@ namespace Lab4.Controllers
                 return NotFound();
             }
 
+            paycheck.Person = await _context.People.FindAsync(paycheck.PersonId);
+            paycheck.Person.Department = await _context.Departments.FindAsync(paycheck.Person.DepartmentId);
+            paycheck.Person.Department.Faculty = await _context.Faculties.FindAsync(paycheck.Person.Department.FacultyId);
+            ModelState.ClearValidationState(nameof(paycheck.Person));
+            ModelState.ClearValidationState(nameof(paycheck.Person.Department));
+            ModelState.ClearValidationState(nameof(paycheck.Person.Department.Faculty));
+            TryValidateModel(paycheck.Person.Department, nameof(paycheck.Person));
+            TryValidateModel(paycheck.Person.Department, nameof(paycheck.Person.Department));
+            TryValidateModel(paycheck.Person.Department.Faculty, nameof(paycheck.Person.Department.Faculty));
             if (ModelState.IsValid)
             {
                 try
@@ -130,9 +153,9 @@ namespace Lab4.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Paychecks", new { id = paycheck.PersonId, name = _context.People.Where(p => p.Id == paycheck.PersonId).FirstOrDefault().PersonName });
             }
-            ViewData["PersonId"] = new SelectList(_context.People, "Id", "PersonName", paycheck.PersonId);
+            //ViewData["PersonId"] = new SelectList(_context.People, "Id", "PersonName", paycheck.PersonId);
             return View(paycheck);
         }
 
@@ -163,7 +186,7 @@ namespace Lab4.Controllers
             var paycheck = await _context.Paychecks.FindAsync(id);
             _context.Paychecks.Remove(paycheck);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Paychecks", new { id = paycheck.PersonId, name = _context.People.Where(p => p.Id == paycheck.PersonId).FirstOrDefault().PersonName });
         }
 
         private bool PaycheckExists(int id)

@@ -3,13 +3,20 @@
 @{
     ViewData["Title"] = "Посада";
 }
-
-<h1>Детальніше про посаду</h1>
+@if (@ViewBag.PositionId == null) {
+    <h1>Посади</h1>
+}
+else
+{
+    <h1>Детальніше про посаду</h1>
+}
 
 <p>
-    @*<a asp-action="Create">Створити нову посаду</a>*@
-    @*@Html.ActionLink("Додати нову посаду", "Create", new { PositionId = @ViewBag.PositionId })*@
-    @*Треба створити посилання на усі посади, і вже звідти створювати нові посади*@
+    @if (@ViewBag.PositionId == null) { 
+        @Html.ActionLink("Додати нову посаду", "Create", new { PositionId = @ViewBag.PositionId })
+    } else {
+        @Html.ActionLink("Усі посади", "Index", new { })
+    }
 </p>
 <table class="table">
     <thead>
@@ -30,12 +37,15 @@
                 @Html.DisplayFor(modelItem => item.PositionName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Salary)
+                @*@Html.DisplayFor(modelItem => item.Salary)*@
+                @item.Salary.ToString("N0")
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a> |
-                @*<a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
-                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                @if (@ViewBag.PositionId == null) {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a>
+                    <span>|</span>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                }
             </td>
         </tr>
 }

@@ -3,9 +3,14 @@
 @{
     ViewData["Title"] = "Кафедри за факультетом";
 }
-
-<h1>Список кафедр за факультетом: @ViewBag.FacultyName</h1>
-
+@if (@ViewBag.FacultyName == null)
+{
+    <h1>Усі кафедри</h1>
+}
+else
+{
+    <h1>Список кафедр за факультетом: @ViewBag.FacultyName</h1>
+}
 <p>
     @*<a asp-action="Create" asp-route-id="@ViewBag.FacultyId">Додати нову кафедру</a>*@
     @Html.ActionLink("Додати нову кафедру", "Create", new { facultyId = @ViewBag.FacultyId })
@@ -16,9 +21,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.DepartmentName)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Faculty)
-            </th>
+            @if (@ViewBag.FacultyName == null)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.Faculty)
+                </th>
+            }
             <th></th>
         </tr>
     </thead>
@@ -28,14 +36,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.DepartmentName)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Faculty.FacultyName)
-            </td>
+            @if (@ViewBag.FacultyName == null)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Faculty.FacultyName)
+                </td>
+            }
             <td>
                 @Html.ActionLink("Редагувати", "Edit", new { id = @item.Id, facultyId = @ViewBag.FacultyId }) |
                 @*<a asp-action="Edit" asp-route-id="@item.Id">Редагувати</a> |*@
                 <a asp-action="Details" asp-route-id="@item.Id">Детальніше</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                @Html.ActionLink("Видалити", "Delete", new { id = @item.Id, facultyId = @ViewBag.FacultyId })
             </td>
         </tr>
 }

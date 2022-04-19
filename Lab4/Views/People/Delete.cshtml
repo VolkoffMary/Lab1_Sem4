@@ -27,7 +27,39 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index" asp-route-id="@Model.DepartmentId" asp-route-name="@Model.Department.DepartmentName">Назад до списку працівників</a>
+        
+        @if (@Model.PeoplePositions.Count == 0 && @Model.Paychecks.Count == 0)
+        {
+            <input type="submit" value="Видалити" class="btn btn-danger" />
+        }
+        else
+        {
+            string hint = "Не можна видалити, бо до цього працівника прив'язані";
+            if (@Model.PeoplePositions.Count != 0 && @Model.Paychecks.Count == 0)
+            {
+                hint += "виплати."; 
+            }
+            else if (@Model.PeoplePositions.Count == 0 && @Model.Paychecks.Count != 0)
+            {
+                hint += "посади."; 
+            }
+            else
+            {
+                hint += "виплати та посади."; 
+            }
+            <span title=@hint>
+                <input type="submit" value="Видалити" class="btn btn-danger" disabled />
+            </span>
+        }
+        <span>|</span>
+
+       @if (ViewBag.DepartmentName == null)
+        {   
+            <a asp-controller="People" asp-action="Index">Назад до списку усіх працівників</a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.DepartmentId" asp-route-name="@Model.Department.DepartmentName">Назад до списку працівників</a>
+        }
     </form>
 </div>

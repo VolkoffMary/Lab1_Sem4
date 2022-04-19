@@ -20,10 +20,14 @@ namespace Lab4.Controllers
         }
 
         // GET: Departments
-        public async Task<IActionResult> Index(int? id, string? name)
+        public async Task<IActionResult> Index(int? id, string name)
         {
-            if (id == null)
-                return RedirectToAction("Faculties", "Index");
+            if (id == null || name == null)
+            {
+                var departments = _context.Departments.Include(x => x.Faculty);
+                return View(await departments.ToListAsync());
+            }
+
             //Знаходження кафедр за факультетами
             ViewBag.FacultyId = id;
             ViewBag.FacultyName = name;
@@ -53,11 +57,17 @@ namespace Lab4.Controllers
         }
 
         // GET: Departments/Create
-        public IActionResult Create(int facultyId)
+        public IActionResult Create(int? facultyId)
         {
-            //ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "FacultyName");
-            ViewBag.FacultyId = facultyId;
-            ViewBag.FacultyName = _context.Faculties.Where(f => f.Id == facultyId).FirstOrDefault().FacultyName;
+            if (facultyId == null)
+            {
+                ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "FacultyName");
+            }
+            else
+            {
+                ViewBag.FacultyId = facultyId;
+                ViewBag.FacultyName = _context.Faculties.Where(f => f.Id == facultyId).FirstOrDefault().FacultyName;
+            }
             return View();
         }
 
@@ -69,6 +79,9 @@ namespace Lab4.Controllers
         public async Task<IActionResult> Create(int facultyId, [Bind("Id,DepartmentName")] Department department)
         {
             department.FacultyId = facultyId;
+            department.Faculty = await _context.Faculties.FindAsync(department.FacultyId);
+            ModelState.ClearValidationState(nameof(department.Faculty));
+            TryValidateModel(department.Faculty, nameof(department.Faculty));
             if (ModelState.IsValid)
             {
                 _context.Add(department);
@@ -82,24 +95,28 @@ namespace Lab4.Controllers
         }
 
         // GET: Departments/Edit/5
-        public async Task<IActionResult> Edit(int? id, int facultyId)
+        public async Task<IActionResult> Edit(int? id, int? facultyId)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var department = await _context.Departments.FindAsync(id);
-            department.FacultyId = facultyId;
-
+            department.Faculty = await _context.Faculties.FindAsync(department.FacultyId);
             ViewBag.FacultyId = department.FacultyId;
-            ViewBag.FacultyName = _context.Faculties.Where(f => f.Id == department.FacultyId).FirstOrDefault().FacultyName;
+            if (facultyId != null)
+            {
+                ViewBag.FacultyName = _context.Faculties.Where(f => f.Id == department.FacultyId).FirstOrDefault().FacultyName;
+                ViewBag.FacultyId = facultyId;
+            }
+            else
+            {
+                ViewBag.FacultyName = null;
+                ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "FacultyName", facultyId);
+            }
 
             if (department == null)
-            {
                 return NotFound();
-            }
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "FacultyName", facultyId);
+
             return View(department);
         }
 
@@ -108,14 +125,16 @@ namespace Lab4.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int facultyId, [Bind("Id,DepartmentName")] Department department)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FacultyId,DepartmentName")] Department department)
         {
-            department.FacultyId = facultyId;
             if (id != department.Id)
             {
                 return NotFound();
             }
 
+            department.Faculty = await _context.Faculties.FindAsync(department.FacultyId);
+            ModelState.ClearValidationState(nameof(department.Faculty));
+            TryValidateModel(department.Faculty, nameof(department.Faculty));
             if (ModelState.IsValid)
             {
                 try
@@ -134,28 +153,30 @@ namespace Lab4.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Departments", new { id = department.FacultyId, name = _context.Faculties.Where(f => f.Id == department.FacultyId).FirstOrDefault().FacultyName });
             }
             ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "FacultyName", department.FacultyId);
             return View(department);
-            //return RedirectToAction("Index", "Departments", new { id = department.FacultyId, name = _context.Faculties.Where(f => f.Id == department.FacultyId).FirstOrDefault().FacultyName });
         }
 
         // GET: Departments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int? facultyId)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var department = await _context.Departments
                 .Include(d => d.Faculty)
+                .Include(d => d.People)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (facultyId != null)
+                ViewBag.FacultyName = _context.Faculties.Where(f => f.Id == department.FacultyId).FirstOrDefault().FacultyName;
+            else
+                ViewBag.FacultyName = null;
+
             if (department == null)
-            {
                 return NotFound();
-            }
 
             return View(department);
         }
@@ -168,7 +189,7 @@ namespace Lab4.Controllers
             var department = await _context.Departments.FindAsync(id);
             _context.Departments.Remove(department);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Departments", new { id = department.FacultyId, name = _context.Faculties.Where(f => f.Id == department.FacultyId).FirstOrDefault().FacultyName });
         }
 
         private bool DepartmentExists(int id)

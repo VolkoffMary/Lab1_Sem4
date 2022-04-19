@@ -18,7 +18,7 @@
             </div>*@
             <div class="form-group">
                 <label asp-for="MonthDate" class="control-label"></label>
-                <input asp-for="MonthDate" class="form-control" />
+                <input type="date" asp-for="MonthDate" class="form-control" />
                 <span asp-validation-for="MonthDate" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -30,7 +30,7 @@
             <input type="hidden" value="@ViewBag.PersonId" name="PersonId" />
 
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Створити" class="btn btn-primary" />
             </div>
         </form>
     </div>

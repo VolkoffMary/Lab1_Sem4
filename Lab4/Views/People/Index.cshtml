@@ -4,12 +4,17 @@
     ViewData["Title"] = "Працівники за кафедрою";
 }
 
-<h1>Працівники за кафедрою @ViewBag.DepartmentName</h1>
+@if (@ViewBag.DepartmentName == null)
+{
+    <h1>Усі працівники</h1>
+}
+else
+{
+    <h1>Працівники за кафедрою @ViewBag.DepartmentName</h1>
+}
 
 <p>
-    @*<a asp-action="Create" asp-route-id="@ViewBag.DepartmentId">Додати нового працівника</a>*@
     @Html.ActionLink("Додати нового працівника", "Create", new { DepartmentId = @ViewBag.DepartmentId })
-    @*<a asp-controller="Departments" asp-action="Index" asp-route-id="@ViewBag.FacultyId" asp-route-name="@ViewBag.FacultyName">Назад до списку кафедр</a>*@
 </p>
 <table class="table">
     <thead>
@@ -17,9 +22,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.PersonName)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Department)
-            </th>
+            @if (@ViewBag.DepartmentName == null)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.Department)
+                </th>
+            }
             <th></th>
         </tr>
     </thead>
@@ -29,16 +37,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.PersonName)
             </td>
+            @if (@ViewBag.DepartmentName == null)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Department.DepartmentName)
+                </td>
+            }
             <td>
-                @Html.DisplayFor(modelItem => item.Department.DepartmentName)
-            </td>
-            <td>
-                @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |*@
                 @Html.ActionLink("Редагувати", "Edit", new { id = @item.Id, departmentId = @ViewBag.DepartmentId }) |
                 <a asp-controller="Paychecks" asp-action="Index" asp-route-id="@item.Id" asp-route-name="@item.PersonName">Детальніше: чеки</a> |
                 <a asp-controller="PeoplePositions" asp-action="Index" asp-route-id="@item.Id" asp-route-name="@item.PersonName">Детальніше: посади</a> |
-                @*<a asp-action="Details" asp-route-id="@item.Id">Детальніше</a> |*@
-                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                @Html.ActionLink("Видалити", "Delete", new { id = @item.Id, departmentId = @ViewBag.DepartmentId })
             </td>
         </tr>
 }
