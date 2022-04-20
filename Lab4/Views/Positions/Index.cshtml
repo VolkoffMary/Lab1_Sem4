@@ -18,7 +18,7 @@ else
         @Html.ActionLink("Усі посади", "Index", new { })
     }
 </p>
-<table class="table">
+<table class="table" id="table">
     <thead>
         <tr>
             <th>
@@ -38,7 +38,7 @@ else
             </td>
             <td>
                 @*@Html.DisplayFor(modelItem => item.Salary)*@
-                @item.Salary.ToString("N0")
+                @item.Salary.ToString("N2")
             </td>
             <td>
                 @if (@ViewBag.PositionId == null) {
@@ -51,3 +51,42 @@ else
 }
     </tbody>
 </table>
+
+
+@if (@ViewBag.PositionId == null)
+{
+    <div align="center" class="container">
+        <div id="chartdiv"></div>
+    </div>
+    @section scripts{
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+            google.charts.load('current', {'packages': ['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                $.get('/api/Chart/JsonDataSalaryPerPosition', function(JsonDataSalaryPerPosition) {
+                    data = google.visualization.arrayToDataTable(JsonDataSalaryPerPosition, false);
+                    var tableWidth = document.getElementById('table').clientWidth;
+                    console.log(tableWidth);
+                    var option = {
+                        title: "Порівняння зарплати на кожній посаді",
+                        width: tableWidth,
+                        height: 1000,
+                        hAxis: {
+                          title: 'Зарплата',
+                          minValue: 0,
+                        },
+                        vAxis: {
+                          title: 'Посада'
+                        },
+                        bars: 'horizontal'
+                    };
+                    chart = new google.visualization.BarChart(document.getElementById('chartdiv'));
+                    chart.draw(data, option);
+                })
+            }
+
+        </script>
+    }
+}

@@ -15,7 +15,7 @@ else
     @*<a asp-action="Create" asp-route-id="@ViewBag.FacultyId">Додати нову кафедру</a>*@
     @Html.ActionLink("Додати нову кафедру", "Create", new { facultyId = @ViewBag.FacultyId })
 </p>
-<table class="table">
+<table class="table" id="table">
     <thead>
         <tr>
             <th>
@@ -52,3 +52,32 @@ else
 }
     </tbody>
 </table>
+@if (@ViewBag.FacultyName == null)
+{
+    <div align="center" class="container">
+        <div id="chartdiv"></div>
+    </div>
+    @section scripts{
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+            google.charts.load('current', {'packages': ['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                $.get('/api/Chart/JsonDataPeopleByDepartment', function(JsonDataPeopleByDepartment) {
+                    data = google.visualization.arrayToDataTable(JsonDataPeopleByDepartment, false);
+                    var tableWidth = document.getElementById('table').clientWidth;
+                    console.log(tableWidth);
+                    var option = {
+                        title: "Розподіл працівників за кафедрами",
+                        width: tableWidth,
+                        height: 400
+                    };
+                    chart = new google.visualization.PieChart(document.getElementById('chartdiv'))
+                    chart.draw(data, option);
+                })
+            }
+
+        </script>
+    }
+}
