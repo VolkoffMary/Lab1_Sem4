@@ -18,11 +18,11 @@ namespace Lab4.Controllers
         {
             var departments = _context.Departments.ToList();
             List<object> peopleByDepartment = new List<object>();
-            peopleByDepartment.Add(new[] { "Кафедра", "Кількість працівників" });
+            peopleByDepartment.Add(new[] { "0", "Кафедра", "Кількість працівників" });
             foreach (var d in departments)
             {
                 d.People = _context.People.Where(p => p.DepartmentId == d.Id).ToList();
-                peopleByDepartment.Add(new object[] { d.DepartmentName, d.People.Count() });
+                peopleByDepartment.Add(new object[] { d.FacultyId, d.DepartmentName, d.People.Count() });
             }
             return new JsonResult(peopleByDepartment);
         }

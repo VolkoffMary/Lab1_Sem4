@@ -52,11 +52,12 @@ else
 }
     </tbody>
 </table>
-@if (@ViewBag.FacultyName == null)
-{
-    <div align="center" class="container">
-        <div id="chartdiv"></div>
-    </div>
+
+
+<div align="center" class="container">
+    <div id="chartdiv"></div>
+</div>
+
     @section scripts{
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script>
@@ -65,9 +66,14 @@ else
 
             function drawChart() {
                 $.get('/api/Chart/JsonDataPeopleByDepartment', function(JsonDataPeopleByDepartment) {
-                    data = google.visualization.arrayToDataTable(JsonDataPeopleByDepartment, false);
+                    var FId = '@(ViewBag.FacultyId)';             
+                    var jsonData = JsonDataPeopleByDepartment.filter(
+                        data => (FId==''|| data[0]==FId || data[0]=="0"));
+                    JsonDataPeopleByDepartment.forEach(elem => elem.shift()); // because new array are just links to elements of an old one
+
+                    data = google.visualization.arrayToDataTable(jsonData, false);
                     var tableWidth = document.getElementById('table').clientWidth;
-                    console.log(tableWidth);
+
                     var option = {
                         title: "Розподіл працівників за кафедрами",
                         width: tableWidth,
@@ -77,7 +83,5 @@ else
                     chart.draw(data, option);
                 })
             }
-
         </script>
     }
-}
